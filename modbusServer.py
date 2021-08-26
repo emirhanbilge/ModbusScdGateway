@@ -25,43 +25,60 @@ log = logging.getLogger()
 
 log.setLevel(logging.CRITICAL)
 
+def updating_writer(a):
+    
+    context  = a[0]
+    register = 3 # mode 3
+    slave_id = 0x00
+    address  = 0x10 #16. word adresi
+    values   = []  
+    for i in range(1,100):
+        values.append(i)
+    
+    context[slave_id].setValues(register, address, values)
 
-def writeRegister(a , address , values):  ###### Tüm blok yazım işlemleri için kullanılacak
+def updating_custom_writer(a,values):
     global Context
     context  = a[0]
     register = 3 # mode 3
     slave_id = 0x00
-    context[slave_id].setValues(register, address, values) 
+    address  = 0x10 #0. word adresi  
 
+    context[slave_id].setValues(register, address, values) # server da ki 16. word adresinden itibaren values dizisini yükle.
 
-def readRegister(a , address):   ############## Tüm blok okuma işlemleri için
+def updating_settings1_writer(a,values):
     global Context
     context  = a[0]
     register = 3 # mode 3
     slave_id = 0x00
-    return context[slave_id].getValues(register, address, 1) 
+    address  = 0x42 #0. word adresi
 
-def writeLiveStream(a , x_y_z_arr):  ##### kullanıcı anlık datayı buradan okuyacak
-    for i in range(3):
-        writeRegister(a, i , x_y_z_arr[i]) #  0 - 2 arası canlı veri okunacağı yer
+    context[slave_id].setValues(register, address, values) # server da ki 16. word adresinden itibaren values dizisini yükle.
 
-def writeStreamSecond(a , x_y_z_All):    ##### kullanıcı saniyelik datayı buradan okuyacak 
-    lnght = len(x_y_z_All)
-    for i in range(lnght):
-        writeRegister(a, i+3 , x_y_z_All[i]) 
+def updating_settings2_writer(a,values):
+    global Context
+    context  = a[0]
+    register = 3 # mode 3
+    slave_id = 0x00
+    address  = 0x43 #0. word adresi
 
+    context[slave_id].setValues(register, address, values) # server da ki 16. word adresinden itibaren values dizisini yükle.
+    
 def readSettings1(a):
-    return readRegister(a , 69) # server da ki 16. word adresinden itibaren values dizisini yükle.
+    global Context
+    context  = a[0]
+    register = 3 # mode 3
+    slave_id = 0x00
+    address  = 0x00 #0. word adresi
+    return context[slave_id].getValues(register, 66, 1) # server da ki 16. word adresinden itibaren values dizisini yükle.
 
 def readSettings2(a):
-    return readRegister(a , 70) # server da ki 16. word adresinden itibaren values dizisini yükle.
-
-def writeSettings1(a , values):
-    writeRegister(a , 69 , values)
-
-def writeSettings2(a , values):
-    writeRegister(a , 70 , values)
-
+    global Context
+    context  = a[0]
+    register = 3 # mode 3
+    slave_id = 0x00
+    address  = 0x00 #0. word adresi
+    return context[slave_id].getValues(register, 67, 1) # server da ki 16. word adresinden itibaren values dizisini yükle.
 
 
 def run_async_server():
