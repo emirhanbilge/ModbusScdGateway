@@ -60,6 +60,7 @@ class CustomModbusResponse(ModbusResponse):
 
 class CustomModbusRequest(ModbusRequest):
 
+  
     function_code = 55
     _rtu_frame_size = 8
 

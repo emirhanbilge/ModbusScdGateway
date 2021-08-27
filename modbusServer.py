@@ -25,60 +25,42 @@ log = logging.getLogger()
 
 log.setLevel(logging.CRITICAL)
 
-def updating_writer(a):
-    
-    context  = a[0]
-    register = 3 # mode 3
-    slave_id = 0x00
-    address  = 0x10 #16. word adresi
-    values   = []  
-    for i in range(1,100):
-        values.append(i)
-    
-    context[slave_id].setValues(register, address, values)
 
-def updating_custom_writer(a,values):
+def writeRegister(a , address , values):  ###### Tüm blok yazım işlemleri için kullanılacak
     global Context
     context  = a[0]
     register = 3 # mode 3
     slave_id = 0x00
-    address  = 0x10 #0. word adresi  
+    context[slave_id].setValues(register, address, values) 
 
-    context[slave_id].setValues(register, address, values) # server da ki 16. word adresinden itibaren values dizisini yükle.
 
-def updating_settings1_writer(a,values):
+def readRegister(a , address):   ############## Tüm blok okuma işlemleri için
     global Context
     context  = a[0]
     register = 3 # mode 3
     slave_id = 0x00
-    address  = 0x42 #0. word adresi
+    return context[slave_id].getValues(register, address, 1) 
 
-    context[slave_id].setValues(register, address, values) # server da ki 16. word adresinden itibaren values dizisini yükle.
-
-def updating_settings2_writer(a,values):
-    global Context
-    context  = a[0]
-    register = 3 # mode 3
-    slave_id = 0x00
-    address  = 0x43 #0. word adresi
-
-    context[slave_id].setValues(register, address, values) # server da ki 16. word adresinden itibaren values dizisini yükle.
+def writeLiveStream(a , x_y_z_arr):  ##### kullanıcı anlık datayı buradan okuyacak
     
+    writeRegister(a, 0 , x_y_z_arr) #  0 - 2 arası canlı veri okunacağı yer
+
+def writeStreamSecond(a , x_y_z_All):    ##### kullanıcı saniyelik datayı buradan okuyacak 
+    
+    writeRegister(a, 3 , x_y_z_All) 
+
 def readSettings1(a):
-    global Context
-    context  = a[0]
-    register = 3 # mode 3
-    slave_id = 0x00
-    address  = 0x00 #0. word adresi
-    return context[slave_id].getValues(register, 66, 1) # server da ki 16. word adresinden itibaren values dizisini yükle.
+    return readRegister(a , 69) # server da ki 16. word adresinden itibaren values dizisini yükle.
 
 def readSettings2(a):
-    global Context
-    context  = a[0]
-    register = 3 # mode 3
-    slave_id = 0x00
-    address  = 0x00 #0. word adresi
-    return context[slave_id].getValues(register, 67, 1) # server da ki 16. word adresinden itibaren values dizisini yükle.
+    return readRegister(a , 70) # server da ki 16. word adresinden itibaren values dizisini yükle.
+
+def writeSettings1(a , values):
+    writeRegister(a , 69 , values)
+
+def writeSettings2(a , values):
+    writeRegister(a , 70 , values)
+
 
 
 def run_async_server():
@@ -101,7 +83,7 @@ def run_async_server():
     identity.ModelName = 'Pymodbus Server'
     identity.MajorMinorRevision = version.short()
 
-    StartTcpServer(Context, identity=identity, address=("192.168.2.23", 5020),
+    StartTcpServer(Context, identity=identity, address=("192.168.2.2", 5020),
                    custom_functions=[CustomModbusRequest])
  
 if __name__ == "__main__":
