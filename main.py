@@ -1,15 +1,16 @@
 import sys , time 
 sys.path.append('../')
-from manageSCD import testPeriodic , loop , setStartValuesModbus , periodicTime , setModeSelection , connect , disconnect , startToggle , stopToggle , setSensorsEnables , getSTEResultNotifyNoTime ,setOutputDataRates
 import automatePairing as a
 import threading
 from modbusServer import run_async_server 
-from modbusManagement import mainLoopAPI
-import asyncio 
+from modbusManage import GatewayTh 
 
-# sudo iptables -t nat -A PREROUTING -p tcp --dport 502 -j REDIRECT --to-ports 5020 
+# sudo iptables -t nat -A PREROUTING -p tcp --dport 502 -j REDIRECT --to-ports 5020  port yönlendirme
 
 
+
+
+# connect disconnect olması için clientin asynchronous dosyasında değiştirdim. Buraya modbus TCPServer üzerinden gidip çalıştığı threadin içerisindeki fonksyonu değiştirdim
 
 """ Automate Pairing Thread - Start"""
 def automate_pairing():
@@ -30,50 +31,28 @@ def automate_pairing():
 
 t1 = threading.Thread(target= automate_pairing)
 t1.start()
-"""
+""" Automate Pairing Thread - End"""
+
+
+"""     Modbus Server Running            """
 t2 = threading.Thread(target= run_async_server)
 t2.start()
-"""
-
 time.sleep(3)
-"""
-loop.run_until_complete(connect())
-loop.run_until_complete(setModeSelection(True))
-loop.run_until_complete(disconnect())
-
-"""
 
 
-def t3():
-    loop.run_until_complete(connect())
-    loop.run_until_complete(stopToggle())
-    loop.run_until_complete(setSensorsEnables(b'\xf0'))
-    loop.run_until_complete(setSensorsEnables(b'\x01'))
-    loop.run_until_complete(setOutputDataRates(b'\x00'))
+"""     Modbus SCD GATE            """
+t3 = threading.Thread(target= GatewayTh)
+t3.start()
 
 
-    loop.run_until_complete(startToggle())
-    c2 = 0
-    while(1):
-        print(c2)
-        loop.run_until_complete(getSTEResultNotifyNoTime())
-        c2 +=1
-        loop.run_until_complete(asyncio.sleep(1.0))
-    loop.run_until_complete(disconnect())
-    print("takıldı")
-    
-t2 = threading.Thread(target= t3)
-t2.start()
-
-
-mainloop.quit()  
-"""
+"""     Computer Control  """
 while(1):
-    print("Deneme")
+    time.sleep(3)
 #testPeriodic
+
 mainloop.quit()  
 
-"""
+
 
 
 
