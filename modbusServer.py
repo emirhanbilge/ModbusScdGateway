@@ -82,8 +82,11 @@ def run_async_server():
     identity.ProductName = 'Pymodbus Server'
     identity.ModelName = 'Pymodbus Server'
     identity.MajorMinorRevision = version.short()
-
-    StartTcpServer(Context, identity=identity, address=("192.168.2.2", 5020),
+    import netifaces as ni
+    ni.ifaddresses('eth0')
+    ip = ni.ifaddresses('eth0')[ni.AF_INET][0]['addr']
+    print(ip)
+    StartTcpServer(Context, identity=identity, address=(ip, 5020),
                    custom_functions=[CustomModbusRequest])
  
 if __name__ == "__main__":
