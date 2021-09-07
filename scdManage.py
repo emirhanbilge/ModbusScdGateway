@@ -358,10 +358,13 @@ async def record(recordTime , recordSpeed):
         return -13
 
 
+peridStarter = True
 #################################################### Periodic ##########################################
 async def periodicLiveStream(liveTime , delayTime , speed):
+    global peridStarter
+    peridStarter = True
     try:
-        while(1):
+        while(peridStarter):
             await StreamWithTime(liveTime,speed)
             time.sleep(delayTime)
         return 1
@@ -370,8 +373,10 @@ async def periodicLiveStream(liveTime , delayTime , speed):
 
 
 async def periodicRecord(recordTime , speed , delayTime):
+    global peridStarter
+    peridStarter = True
     try:
-        while(1):
+        while(peridStarter):
             print("Periyodik kayıt çalışıyor ... ")
             await record(recordTime,speed)
             # burada modbusa indirme statusu yazılacak await downloadStatus()
@@ -381,8 +386,10 @@ async def periodicRecord(recordTime , speed , delayTime):
         return -15
 
 async def periodicStreamandRecord(recordTime,speedRecord,liveTime,speedStream):
+    global peridStarter
+    peridStarter = True
     try:
-        while(1):
+        while(peridStarter):
             await record(recordTime,speedRecord)
             # burada modbusa indirme statusu yazılacak await downloadStatus()
             await StreamWithTime(liveTime,speedStream)

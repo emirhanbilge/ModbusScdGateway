@@ -6,7 +6,7 @@ sys.path.append('../')
 # --------------------------------------------------------------------------- #
 from pymodbus.version import version
 from pymodbus.server.asynchronous import StartTcpServer
-
+import threading
 from pymodbus.device import ModbusDeviceIdentification
 from pymodbus.datastore import ModbusSequentialDataBlock
 from pymodbus.datastore import ModbusSlaveContext, ModbusServerContext
@@ -60,8 +60,33 @@ def writeSettings1(a , values):
 
 def writeSettings2(a , values):
     writeRegister(a , 70 , values)
+    
+    
+def readReferences(a):
+    retArr = []
+    for i in range(16):
+        retArr.append(readRegister(a , 69)[0])
+    return readReferences
+
+def writeReferencesOverlap(a,value):
+    writeRegister(a , 96,value)
 
 
+def readReferencesOverlap(a,value):
+    return readRegister(a , 96)[0]
+
+def writeAmplitute(a,value):
+    writeRegister(a , 97,value)
+    
+
+def writeFreq(a , Value):
+    writeRegister(a , 98,value)
+
+def writeRotationalFault(a , Value):
+    writeRegister(a , 99,value)
+
+def readRotationalFault(a):
+    return readRegister(a , 99)[0]
 
 def run_async_server():
     # Modbus kullanılabilir adress dizisini maple
@@ -82,8 +107,11 @@ def run_async_server():
     identity.ProductName = 'Pymodbus Server'
     identity.ModelName = 'Pymodbus Server'
     identity.MajorMinorRevision = version.short()
-
-    StartTcpServer(Context, identity=identity, address=("192.168.2.2", 5020),
+    import netifaces as ni
+    ni.ifaddresses('eth0')
+    ip = ni.ifaddresses('eth0')[ni.AF_INET][0]['addr']
+    print(ip)
+    StartTcpServer(Context, identity=identity, address=(ip, 5020),
                    custom_functions=[CustomModbusRequest])
  
 if __name__ == "__main__":
